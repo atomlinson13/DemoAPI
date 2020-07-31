@@ -20,41 +20,6 @@ logger = logging.getLogger(__name__)
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
-def field_permission_parser(serializer_obj, table_name, *args, **kwargs):
-    if 'context' in kwargs:
-        if 'request' in kwargs['context']:
-            request = kwargs['context']['request']
-
-            # if request.user.is_superuser:
-            #     return serializer_obj
-
-            try:
-                table = TableName.objects.get(name__iexact = table_name)
-                group = request.user.groups.first()
-                group_permissions = group.group_table_col_permissions.filter(table_columns__table__name = table)
-
-                if request.method == 'GET':
-                    fields = group_permissions.filter(view = False)
-                elif request.method in ['PUT', 'PATCH']:
-                    fields = group_permissions.filter(edit = False)
-                elif request.method == 'POST':
-                    fields = group_permissions.filter(create = False)
-                else:
-                    # delete request
-                    pass
-
-                fields = list(fields.values_list('table_columns__column__name', flat=True))
-
-                for field in fields:
-                    try:
-                        serializer_obj.fields.pop(field)
-                    except Exception as ex:
-                        continue
-
-            except Exception as ex:
-                pass
-    return serializer_obj
-
 
 class ClassGroupSerializer(serializers.ModelSerializer): 
     created_date = serializers.DateTimeField(format="%Y-%m-%d %H:%M UTC", required=False, read_only=True) 
