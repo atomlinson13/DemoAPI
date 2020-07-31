@@ -10,7 +10,6 @@ from api_demo.api.models import (
     Grade,
     Notes,
     Attachments,
-    Logs,
     CustomUser as User
 )
 from api_demo.api.serializers.serializer import (

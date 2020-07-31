@@ -81,7 +81,6 @@ class Student(ModelName):
     phone = models.CharField(max_length=256, null=False, blank=True)
     creator = models.ForeignKey('CustomUser', on_delete=models.SET_NULL, related_name="student_creator", null=True, blank=True)
     last_modified_by = models.ForeignKey('CustomUser', null=True, blank=True, on_delete=models.SET_NULL, related_name="student_last_modified_by")
-    # assignments = models.ManyToManyField(Assignment, through='StudentAssignments', blank=True)
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
@@ -155,27 +154,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     @property
     def is_teacher(self): 
         return self.account_type.name == 'teacher'
-
-class Logs(ModelName):
-
-    class Action(models.TextChoices):
-        CREATE = 'created'
-        DELETE = 'deleted'
-        UPDATE = 'updated'
-
-    table = models.CharField('Table Name', max_length=50,blank=False, null=False)
-    col = models.CharField('Table Column', blank=True, null=True, max_length=100) 
-    row_id = models.IntegerField(null=True, blank=True)
-
-    action = models.CharField(blank=True, null=True, max_length=50, choices = Action.choices)
-    message = models.CharField(blank=True, null=True, max_length=250)
-
-    previous_value = models.CharField(blank=True, null=True, max_length=500)
-    new_value = models.CharField(blank=True, null=True, max_length=500)
-    last_modified_by = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL)
-    account_id = models.IntegerField(null=True, blank=True)
-    project_id = models.IntegerField(null=True, blank=True)
-    order_id = models.IntegerField(null=True, blank=True)
 
 class Notes(ModelName):
     creator = models.ForeignKey(CustomUser, null=True, on_delete=models.SET_NULL, related_name="note_creator")
